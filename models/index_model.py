@@ -1,6 +1,53 @@
 import pandas as pd
 import numpy as np
 
+def bike_to_kill(conn,id_b):
+    cur = conn.cursor()
+    cur.execute('''
+            UPDATE bike SET condition='Списан'
+            WHERE id_bike=:id_bike
+            ''', {"id_bike": id_b})
+    conn.commit()
+    return True
+
+def get_one_day_price(conn,id_bike):
+    return pd.read_sql('''
+    SELECT price_type FROM TypeBicycle
+    JOIN BrandBicycle USING (id_type)
+    JOIN ModelBicycle USING (id_brand)
+    JOIN bike USING (id_model)
+    WHERE id_bike=:id_bike
+    ''',conn,params={"id_bike":id_bike})
+
+def get_all_dmg_price(conn,id_bike):
+    return pd.read_sql('''
+            SELECT SUM(damage_sum) AS Общая_сумма FROM bike_rental
+            JOIN rental_journal USING (idbike_rental)
+            WHERE id_bike=:id_bike
+            ''', conn, params={"id_bike": id_bike})
+def bike_from_repair(conn,id_b):
+    cur = conn.cursor()
+    cur.execute('''
+            UPDATE bike SET condition=''
+            WHERE id_bike=:id_bike
+            ''', {"id_bike": id_b})
+    conn.commit()
+    return True
+def bike_to_repair(conn,id_b):
+    cur = conn.cursor()
+    cur.execute('''
+            UPDATE bike SET condition='В ремонте'
+            WHERE id_bike=:id_bike
+            ''', {"id_bike": id_b})
+    conn.commit()
+    return True
+
+#Не используется, но надо чистить код от функции get_condition_list
+def get_condition_list(conn):
+    return pd.read_sql('''
+    SELECT id_bike FROM bike
+    WHERE condition='В ремонте'
+    ''',conn)
 def get_pledge(conn,id_b):
     return pd.read_sql('''
     SELECT pledge FROM bike_rental
@@ -197,7 +244,7 @@ def get_bicycle(conn,m,b,t,y,table):
     get_tabl5(id_b) AS
     (SELECT id_b FROM get_tabl0 WHERE id_b NOT IN get_tabl3 GROUP BY id_b)
     
-    SELECT id_bike, name_model AS Модель,brand_name AS Бренд,release_year AS Год_Выпуска,type_name AS Тип,price_type AS Цена_День,pledge AS Залог FROM bike
+    SELECT id_bike, name_model AS Модель,brand_name AS Бренд,release_year AS Год_Выпуска,type_name AS Тип,price_type AS Цена_День,pledge AS Залог, condition AS Состояние FROM bike
         JOIN ModelBicycle USING (id_model)
         JOIN BrandBicycle USING (id_brand)
         JOIN TypeBicycle USING (id_type)

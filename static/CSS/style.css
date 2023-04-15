@@ -1,3 +1,49 @@
+.menu li {
+ display: inline-block;
+ vertical-align: top;
+ padding: 10px;
+ color: #6f6d6d;
+}
+.menu a {
+ text-decoration: none; /* Убирает подчеркивание для ссылок */
+ color: #6f6d6d;
+ }
+.menu li:hover {
+ background-color: #f87777;
+ cursor: pointer;
+ color: #f8f8f8;
+}
+.menu ul {
+ padding: 0px;
+}
+.active{
+ background-color: #f87777;
+ color: #f8f8f8;
+}
+.active a:visited{
+ color: #f8f8f8;
+}
+.menu a:hover{
+ color: #f8f8f8;
+}
+table {
+    table-layout:auto;
+	margin-bottom: 20px;
+	border: 1px solid #dddddd;
+	border-collapse: collapse;
+	background-color: #fff1f1;
+}
+table th {
+    background-color: #f1f1f1;
+	font-weight: bold;
+	padding: 5px;
+	border: 1px solid #dddddd;
+}
+table td {
+	border: 1px solid #dddddd;
+	background-color: #f8f8f8;
+	padding: 5px;
+}
 .wall_block{
     width:25%;
     height:15%;
@@ -224,4 +270,10 @@ border-bottom: 1px dotted #ddd;
 
 .block_down{
     padding-top:25px;
+}
+.btn_submit{
+    width:100%;
+    text-align:left;
+    background:#fff;
+    border:#fff;
 }

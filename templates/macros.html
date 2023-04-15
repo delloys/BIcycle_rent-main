@@ -1,16 +1,36 @@
-{% macro render_wall_block(i,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br) %}
+{% macro render_wall_block(i,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,condition_list,view_dmg_id,get_all_dmg_price,one_day_price) %}
     {% if i in relation.index %}
         <div class="wall_block">
             <div class="text_block">
                 {% for name in relation.dtypes.index %}
                     {% if name != "id_bike" %}
+                        {% if name == "Состояние" and relation.loc[i,name] == "" %}
+                            <div class="text_block_name">{{name}}:</div><div class="text_block_value"> В прокате</div>
+                            <input hidden type="text" name={{name}} value="{{ relation.loc[i,name] }}">
+                        {% else %}
                         <div class="text_block_name">{{name}}:</div><div class="text_block_value"> {{relation.loc[i,name]}}</div>
                         <input hidden type="text" name={{name}} value="{{ relation.loc[i,name] }}">
+                        {% endif %}
                     {% endif %}
                 {% endfor %}
                 <div id="show_damage">
                     <div id="block_view5">
                         {{render_table(get_one_dmg,i,len)}}
+                        <div>Общая стоимость ремонта повреждений: {{get_all_dmg_price.loc[0,'Общая_сумма']}}</div>
+                        {% if len(one_day_price) != 0 %}
+                            <div>Прибыль за 14 дней: {{14 * one_day_price.loc[0,'price_type']}}</div>
+                            {% if 14 * one_day_price.loc[0,'price_type'] <= get_all_dmg_price.loc[0,'Общая_сумма'] %}
+                                <form action = "{{ url_for('index') }}">
+                                    <input hidden type="text" name=id_to_kill value="{{ view_dmg_id }}">
+                                    <input type="submit"  value="Списать">
+                                </form>
+                            {% endif %}
+                        {% endif %}
+
+                        <form action = "{{ url_for('index') }}">
+                            <input hidden type="text" name=id_to_repair value="{{ view_dmg_id }}">
+                            <input type="submit" class="btn2" value="Отправить в ремонт">
+                        </form>
                         <input type="button" onclick="window.location='{{url_for('index')}}'" class="btn1" value="Закрыть">
                     </div>
                 </div>
@@ -18,36 +38,108 @@
                 {% if relation.loc[i,'id_bike'] in dmg_for_bike %}
                 <form action="#show_damage">
                     <input hidden type="text" name=id_bike value="{{ relation.loc[i,'id_bike'] }}">
+                    <input hidden type="text" name=id_bike_view_dmg value="{{ relation.loc[i,'id_bike'] }}">
                 <button class="btn_damage"><img src="/static/images/icon.png" alt="Зонтик"
                                  style="vertical-align: middle">  Повреждения</button>
                     </form>
                 {% else %}
                 <button disabled class="btn_damage">Повреждения</button>
                 {% endif %}
+
             </div>
         <div class="form_button">
-            {% if relation.loc[i,'id_bike'] in check_rent %}
-            <form action="#zatemnenie_return" method="get">
-                <input hidden type="text" name=id_bike_return value="{{ relation.loc[i,'id_bike'] }}">
-                <input type="submit" class="btn1" value="Сдать">
-            </form>
-            <form action="#zatemnenie_rent" method="get">
+            {% if relation.loc[i,'Состояние'] == "В ремонте" %}
+                <form action="#zatemnenie_rent" method="get">
                     <input type="submit" class="btn2" disabled value="Арендовать">
-                <input hidden type="text" name=id_bike value="{{ relation.loc[i,'id_bike'] }}">
-            </form>
+                    <input hidden type="text" name=id_bike value="{{ relation.loc[i,'id_bike'] }}">
+                </form>
+                <form action="{{ url_for('index') }}" method="get">
+                    <input type="submit" class="btn1"  value="Вернуть в прокат">
+                    <input hidden type="text" name=id_bike_from_repair value="{{ relation.loc[i,'id_bike'] }}">
+                </form>
             {% else %}
-            <form action="#zatemnenie" method="get">
-                <input type="submit" class="btn1" value="Просмотр">
-                <input hidden type="text" name=id_bike value="{{ relation.loc[i,'id_bike'] }}">
-            </form>
-            <form action="#zatemnenie_rent" method="get">
-                    <input type="submit" class="btn2" value="Арендовать">
-                <input hidden type="text" name=id_bike value="{{ relation.loc[i,'id_bike'] }}">
-            </form>
+                {% if relation.loc[i,'id_bike'] in check_rent %}
+                <form action="#zatemnenie_return" method="get">
+                    <input hidden type="text" name=id_bike_return value="{{ relation.loc[i,'id_bike'] }}">
+                    <input type="submit" class="btn1" value="Сдать">
+                </form>
+                <form action="#zatemnenie_rent" method="get">
+                        <input type="submit" class="btn2" disabled value="Арендовать">
+                    <input hidden type="text" name=id_bike value="{{ relation.loc[i,'id_bike'] }}">
+                </form>
+                {% else %}
+                <form action="#zatemnenie" method="get">
+                    <input type="submit" class="btn1" value="Просмотр">
+                    <input hidden type="text" name=id_bike value="{{ relation.loc[i,'id_bike'] }}">
+                </form>
+                <form action="#zatemnenie_rent" method="get">
+                        <input type="submit" class="btn2" value="Арендовать">
+                    <input hidden type="text" name=id_bike value="{{ relation.loc[i,'id_bike'] }}">
+                </form>
+                {% endif %}
             {% endif %}
         </div>
         </div>
     {% endif %}
+{% endmacro %}
+
+
+{% macro render_table_btn(relation, len) %}
+    {% set n = len(relation) %}
+    <table border="1">
+        <tr style="background-color: rgb(242, 242, 242);">
+            {% for name in relation.dtypes.index %}
+                    <th>{{ name }}</th>
+                    <input hidden type="text" value="{{name}}" name="ne">
+            {% endfor %}
+        </tr>
+        <tbody>
+
+        {% for i in range(n) %}
+            <tr>
+                {% for name in relation.dtypes.index %}
+
+                        <td>
+                            {% if relation.loc[i, name] == None %}
+                            –
+                            {% else %}
+                            <input hidden type="text" value="{{relation.loc[i, name]}}" name="{{name}}">
+                                    <form action="#zatemnenie">
+                                        <input hidden type="text" value="{{ relation.loc[i, 'id_type'] }}" name="id_type">
+                                        <input type="submit" value="{{ relation.loc[i, name] }}" class="btn_submit">
+                                    </form>
+                            {% endif %}
+                        </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+{% macro render_selected_type(info,len) %}
+    <p class="block_view_text">
+            <form action="{{ url_for('price') }}" class="form_button" method="get">
+                <div class="text_block">
+                {% for name in info.dtypes.index %}
+                    {% if name != "id_type" %}
+                        {% if name == "Тип_Велосипеда" %}
+                            <div class="text_block_name">{{name}}:</div><div class="text_block_value"> {{info.loc[0,name]}}</div>
+                        {% elif name == "Цена_День" %}
+                            <div class="text_block_name">{{name}}:</div><div class="text_block_value"> <input type="number" name="price_type" value="{{info.loc[0,name]}}"></div>
+                        {% elif name == "Залог" %}
+                            <div class="text_block_name">{{name}}:</div><div class="text_block_value"> <input type="number" name="pledge" value="{{info.loc[0,name]}}"></div>
+                        {% endif %}
+
+                    {% endif %}
+                {% endfor %}
+                </div>
+                <input hidden type="text" name=id_type_changed value="{{ info.loc[0,'id_type'] }}">
+                <input type="submit" class="btn1" value="Сохранить">
+                <input type="button" onclick="window.location='{{url_for('price')}}'" class="btn2" value="Отменить">
+
+            </form>
+    </div>
 {% endmacro %}
 
 {% macro render_table(relation, id, len) %}
@@ -55,7 +147,7 @@
 <table>
     <tr>
         {% for name in relation.dtypes.index %}
-        {% if name != 'id_bike' %}
+        {% if name != 'id_bike'%}
         <th>{{ name }}</th>
         {% endif %}
         {% endfor %}
@@ -75,6 +167,7 @@
     {% endfor %}
     </tbody>
 </table>
+
 {% endmacro %}
 
 {% macro render_view(relation,check_rent) %}
@@ -174,14 +267,14 @@
 
 {% endmacro %}
 
-{% macro render_wall(relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br) %}
+{% macro render_wall(relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,condition_list,view_dmg_id,get_all_dmg_price,one_day_price) %}
 {% set n = len(relation) %}
     {% for i in range(0,n,4) %}
             <div class="wall_line">
-                {{ render_wall_block(i,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br) }}
-                {{ render_wall_block(i+1,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br) }}
-                {{ render_wall_block(i+2,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br) }}
-                {{ render_wall_block(i+3,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br) }}
+                {{ render_wall_block(i,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,condition_list,view_dmg_id,get_all_dmg_price,one_day_price) }}
+                {{ render_wall_block(i+1,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,condition_list,view_dmg_id,get_all_dmg_price,one_day_price) }}
+                {{ render_wall_block(i+2,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,condition_list,view_dmg_id,get_all_dmg_price,one_day_price) }}
+                {{ render_wall_block(i+3,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,condition_list,view_dmg_id,get_all_dmg_price,one_day_price) }}
             </div>
     {% endfor %}
 {% endmacro %}

@@ -46,6 +46,14 @@ def index():
         get_rented(conn, request.values.get('id_bike_return'), request.values.get('date_return'))
 
     #print(df_get_dmg)
+    if request.values.get('id_to_repair'):
+        bike_to_repair(conn,request.values.get('id_to_repair'))
+
+    if request.values.get('id_bike_from_repair'):
+        bike_from_repair(conn, request.values.get('id_bike_from_repair'))
+
+    if request.values.get('id_to_kill'):
+        bike_to_kill(conn,request.values.get('id_to_kill'))
 
     if request.values.get('id_bike_return'):
         id_bike=(request.values.get('id_bike_return'))
@@ -130,8 +138,9 @@ def index():
     df_bike1 = get_bike(conn, id_bike)
     df_dmg_bike = get_dmg_for_bike(conn)
     df_get_one_dmg = get_one_dmg(conn,id_bike)
+    df_get_all_dmg_price = get_all_dmg_price(conn,id_bike)
     df_dmg = df_dmg_bike['id_bike'].tolist()
-    #print(df_dmg)
+    print(df_get_all_dmg_price,'PRIIICE')
 
 
 
@@ -150,8 +159,22 @@ def index():
     df_rent_bike = get_rent_bike(conn)
 
     df=df_rent_bike['id_b'].tolist()
-    #print(df_dmg_bike)
+    print(df_dmg_bike,"DMGG")
     #print(df_damage)
+
+    if request.values.get('id_bike_view_dmg'):
+        view_dmg_id = request.values.get('id_bike_view_dmg')
+        df_one_day_price = get_one_day_price(conn, view_dmg_id)
+        #print(df_one_day_price, 'ODAYP')
+    else:
+        view_dmg_id = -1
+        df_one_day_price = get_one_day_price(conn, id_bike)
+        #print(df_one_day_price, 'ODAYP')
+
+
+    condition_list = get_condition_list(conn)
+    print(condition_list, 'CL')
+
     html = render_template(
         'index.html',
     bike=df_bike,
@@ -178,6 +201,10 @@ def index():
     pay_day = df_pay_day,
     pledge = df_pledge,
     itogo = itogo,
+    condition_list = condition_list,
+    view_dmg_id = view_dmg_id,
+    get_all_dmg_price = df_get_all_dmg_price,
+    one_day_price = df_one_day_price,
     len=len,
     str = str,
     zip = zip)
