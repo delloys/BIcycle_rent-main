@@ -4,7 +4,7 @@ import numpy as np
 def bike_to_kill(conn,id_b):
     cur = conn.cursor()
     cur.execute('''
-            UPDATE bike SET condition='Списан'
+            DELETE FROM bike 
             WHERE id_bike=:id_bike
             ''', {"id_bike": id_b})
     conn.commit()
@@ -342,3 +342,17 @@ def get_maxmin_pledge(conn):
     return pd.read_sql('''
     SELECT MIN(pledge) AS Min, MAX(pledge) AS Max FROM TypeBicycle;
     ''',conn)
+
+def add_bicycle(conn,date_issue_add,id_model):
+    year = date_issue_add[0]+date_issue_add[1]+date_issue_add[2]+date_issue_add[3];
+
+    cur = conn.cursor()
+    cur.execute('''
+        INSERT INTO bike (year_issue,condition,id_model) VALUES
+        (:year_issue,"",:id_model);
+        ''', {"year_issue":year,"id_model":id_model})
+    conn.commit()
+    print(pd.read_sql(f'''
+        SELECT * FROM bike;
+        ''', conn))
+    return True

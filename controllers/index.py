@@ -9,7 +9,7 @@ from models.index_model import *
 def index():
 
     conn = get_db_connection()
-
+    current_date = datetime.now().date()
     df_table = pd.DataFrame([
                        [1, 'В наличии', 'get_tabl3'],
                        [2, 'Отсутствуют', 'get_tabl5']],
@@ -101,6 +101,9 @@ def index():
 
     if request.values.get('idbike_rental'):
         get_br = request.values.get('idbike_rental')
+    if request.values.get('date_issue_add'):
+        add_bicycle(conn,request.values.get('date_issue_add'),request.values.get('model_name_add'))
+
 
     df_pledge = get_pledge(conn, id_bike)
     df_pay_day = get_pay_day(conn, id_bike)
@@ -140,7 +143,7 @@ def index():
     df_get_one_dmg = get_one_dmg(conn,id_bike)
     df_get_all_dmg_price = get_all_dmg_price(conn,id_bike)
     df_dmg = df_dmg_bike['id_bike'].tolist()
-    print(df_get_all_dmg_price,'PRIIICE')
+
 
 
 
@@ -152,6 +155,13 @@ def index():
     df_client = get_client(conn)
 
     df_bike = get_bicycle(conn,models,brands,types,years,table)
+    for index, row in df_bike.iterrows():
+        if (4 >= int(current_date.year)-int(row['Год_Выпуска']) > 3):
+            df_bike['Цена_День'][index]= row['Цена_День'] * 0.9
+        elif (5>=int(current_date.year)-int(row['Год_Выпуска']) > 4):
+            df_bike['Цена_День'][index] = row['Цена_День'] * 0.8
+        elif (int(current_date.year)-int(row['Год_Выпуска']) > 5):
+            df_bike['Цена_День'][index] = row['Цена_День'] * 0.7
     df_type = get_type(conn)
     df_brand = get_brand(conn)
     df_model = get_model(conn)
@@ -159,7 +169,6 @@ def index():
     df_rent_bike = get_rent_bike(conn)
 
     df=df_rent_bike['id_b'].tolist()
-    print(df_dmg_bike,"DMGG")
     #print(df_damage)
 
     if request.values.get('id_bike_view_dmg'):
@@ -173,7 +182,6 @@ def index():
 
 
     condition_list = get_condition_list(conn)
-    print(condition_list, 'CL')
 
     html = render_template(
         'index.html',

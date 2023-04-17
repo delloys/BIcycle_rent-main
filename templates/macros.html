@@ -17,13 +17,17 @@
                     <div id="block_view5">
                         {{render_table(get_one_dmg,i,len)}}
                         <div>Общая стоимость ремонта повреждений: {{get_all_dmg_price.loc[0,'Общая_сумма']}}</div>
-                        {% if len(one_day_price) != 0 %}
-                            <div>Прибыль за 14 дней: {{14 * one_day_price.loc[0,'price_type']}}</div>
-                            {% if 14 * one_day_price.loc[0,'price_type'] <= get_all_dmg_price.loc[0,'Общая_сумма'] %}
-                                <form action = "{{ url_for('index') }}">
-                                    <input hidden type="text" name=id_to_kill value="{{ view_dmg_id }}">
-                                    <input type="submit"  value="Списать">
-                                </form>
+                        {% if len(get_all_dmg_price) != 0 %}
+                            {% if len(one_day_price) != 0 %}
+                                {% if get_all_dmg_price.loc[0,'Общая_сумма'] is not none %}
+                                        <div>Прибыль за 14 дней: {{14 * one_day_price.loc[0,'price_type']}}</div>
+                                        {% if 14 * one_day_price.loc[0,'price_type'] <= get_all_dmg_price.loc[0,'Общая_сумма'] %}
+                                            <form action = "{{ url_for('index') }}">
+                                                <input hidden type="text" name=id_to_kill value="{{ view_dmg_id }}">
+                                                <input type="submit"  value="Списать">
+                                            </form>
+                                        {% endif %}
+                                {% endif %}
                             {% endif %}
                         {% endif %}
 
