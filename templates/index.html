@@ -9,7 +9,7 @@
 <body>
     <div id="zatemnenie">
         <div id="block_view2">
-        {{macros.render_view(info,check_rent)}}
+        {{macros.render_view(info,rent_bike)}}
         </div>
     </div>
     <div id="zatemnenie_rent">
@@ -19,7 +19,7 @@
     </div>
     <div id="zatemnenie_return">
         <div id="block_view4">
-        {{macros.render_return(get_bike,damage,id_bike,count_plus,len,str,list_dmg,list_num,df_br,date_ret,date_issue,pay_day,pledge,itogo)}}
+        {{macros.render_return(get_bike,damage,id_bike,count_plus,len,str,list_dmg,list_num,df_bicycle_rental,date_ret,date_issue,pay_day,pledge,itogo)}}
         </div>
     </div>
 <div class=menu>
@@ -30,11 +30,11 @@
      </ul>
  </div>
 
-<div class="WALL">
+<div class="wall_class">
 
     <div class="side_block">
         <form action="{{url_for('index')}}" method="post">
-            {% for df, name_df, view in zip(list_df,sections,list_ch) %}
+            {% for df, name_df, view in zip(list_df,sections,list_choices) %}
             {{ macros.render_side(df,name_df,view,len) }}
             {% endfor %}
             <p class="form_button">
@@ -47,7 +47,7 @@
 
     <div class="center_block">
 
-        {{macros.render_wall(bike,rent_bike,len,dmg_check,dmg_for_bike,get_one_dmg,df_br,condition_list,view_dmg_id,get_all_dmg_price,one_day_price)}}
+        {{macros.render_wall(bicycle_list,rent_bike,len,dmg_check,dmg_for_bike,get_one_dmg,df_bicycle_rental,view_dmg_id,get_all_dmg_price,one_day_price)}}
         </div>
 
 </div>

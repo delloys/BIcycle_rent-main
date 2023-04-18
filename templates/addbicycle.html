@@ -3,22 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Добавить велосипед</title>
+    {% import "macros.html" as macros %}
 </head>
 <body>
-{% macro render_form_add(relation, len) %}
-<select name="model_name_add" required>
-    <option value="">
-    {% set n = len(relation) %}
-    <!-- формируем строки списка (каждое значение поля reader_name - строка списка) в виде <option [selected] value = код_читателя> ФИО </option> -->
-    {% for i in range(n) %}
-    {% set id_m = relation.loc[i, "id_model"] %}
-    <!-- атрибут value элемента будет совпадать с id читателя -->
-    <option value={{id_m}}>
-        {{ relation.loc[i, "name_model"] }}
-    </option>
-    {% endfor %}
-</select>
-{% endmacro %}
+
 <div class=block>
     <form action="{{ url_for('index') }}" method="post">
         <p>
@@ -26,7 +14,7 @@
                 Год производства:
                 <input type="date" name="date_issue_add" required>
                 Название модели:
-                {{render_form_add(model_names,len)}}
+                {{macros.render_form_add(model_names,len)}}
             </label>
         </p>
         <p>

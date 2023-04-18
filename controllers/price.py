@@ -7,6 +7,7 @@ from utils import get_db_connection
 @app.route('/price', methods=['get', 'post'])
 
 def price():
+
     conn = get_db_connection()
 
     if request.values.get('id_type'):

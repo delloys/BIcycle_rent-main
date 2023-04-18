@@ -1,4 +1,4 @@
-{% macro render_wall_block(i,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,condition_list,view_dmg_id,get_all_dmg_price,one_day_price) %}
+{% macro render_wall_block(i,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,view_dmg_id,get_all_dmg_price,one_day_price) %}
     {% if i in relation.index %}
         <div class="wall_block">
             <div class="text_block">
@@ -86,7 +86,6 @@
         </div>
     {% endif %}
 {% endmacro %}
-
 
 {% macro render_table_btn(relation, len) %}
     {% set n = len(relation) %}
@@ -271,14 +270,14 @@
 
 {% endmacro %}
 
-{% macro render_wall(relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,condition_list,view_dmg_id,get_all_dmg_price,one_day_price) %}
+{% macro render_wall(relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,view_dmg_id,get_all_dmg_price,one_day_price) %}
 {% set n = len(relation) %}
     {% for i in range(0,n,4) %}
             <div class="wall_line">
-                {{ render_wall_block(i,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,condition_list,view_dmg_id,get_all_dmg_price,one_day_price) }}
-                {{ render_wall_block(i+1,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,condition_list,view_dmg_id,get_all_dmg_price,one_day_price) }}
-                {{ render_wall_block(i+2,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,condition_list,view_dmg_id,get_all_dmg_price,one_day_price) }}
-                {{ render_wall_block(i+3,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,condition_list,view_dmg_id,get_all_dmg_price,one_day_price) }}
+                {{ render_wall_block(i,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,view_dmg_id,get_all_dmg_price,one_day_price) }}
+                {{ render_wall_block(i+1,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,view_dmg_id,get_all_dmg_price,one_day_price) }}
+                {{ render_wall_block(i+2,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,view_dmg_id,get_all_dmg_price,one_day_price) }}
+                {{ render_wall_block(i+3,relation,check_rent,len,dmg_for_bike,dmg_df,get_one_dmg,df_br,view_dmg_id,get_all_dmg_price,one_day_price) }}
             </div>
     {% endfor %}
 {% endmacro %}
@@ -395,6 +394,21 @@
     <option value={{id_c}}>
         {% endif %}
         {{ relation.loc[i, "full_name"] }}
+    </option>
+    {% endfor %}
+</select>
+{% endmacro %}
+
+{% macro render_form_add(relation, len) %}
+<select name="model_name_add" required>
+    <option value="">
+    {% set n = len(relation) %}
+    <!-- формируем строки списка (каждое значение поля reader_name - строка списка) в виде <option [selected] value = код_читателя> ФИО </option> -->
+    {% for i in range(n) %}
+    {% set id_m = relation.loc[i, "id_model"] %}
+    <!-- атрибут value элемента будет совпадать с id читателя -->
+    <option value={{id_m}}>
+        {{ relation.loc[i, "name_model"] }}
     </option>
     {% endfor %}
 </select>

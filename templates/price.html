@@ -7,18 +7,17 @@
     {% import "macros.html" as macros %}
 </head>
 <body>
-<div id="zatemnenie">
-        <div id="block_view2">
-        {{macros.render_selected_type(get_selected_type,len)}}
+    <div id="zatemnenie">
+            <div id="block_view2">
+            {{macros.render_selected_type(get_selected_type,len)}}
+            </div>
         </div>
+    <div class=menu>
+         <ul>
+             <li><a href={{url_for("index")}}>Поиск</a></li>
+             <li class = active><a href={{url_for("price")}}>Цены</a></li>
+         </ul>
     </div>
-<div class=menu>
-     <ul>
-         <li><a href={{url_for("index")}}>Поиск</a></li>
-         <li class = active><a href={{url_for("price")}}>Цены</a></li>
-     </ul>
-</div>
 {{macros.render_table_btn(get_price_info,len)}}
-
 </body>
 </html>
