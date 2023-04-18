@@ -107,8 +107,49 @@ def index():
 
     df_pledge = get_pledge(conn, id_bike)
     df_pay_day = get_pay_day(conn, id_bike)
+    for index, row in df_pay_day.iterrows():
+        if (4 >= int(current_date.year)-int(row['Год_Выпуска']) > 3):
+            df_pay_day['price_type'][index]= row['price_type'] * 0.9
+        elif (5>=int(current_date.year)-int(row['Год_Выпуска']) > 4):
+            df_pay_day['price_type'][index] = row['price_type'] * 0.8
+        elif (int(current_date.year)-int(row['Год_Выпуска']) > 5):
+            df_pay_day['price_type'][index] = row['price_type'] * 0.7
     df_date_issue = get_date_i(conn, id_bike)
 
+
+
+    df_damage = get_damage(conn)
+    df_bike1 = get_bike(conn, id_bike)
+    df_dmg_bike = get_dmg_for_bike(conn)
+    df_get_one_dmg = get_one_dmg(conn,id_bike)
+    df_get_all_dmg_price = get_all_dmg_price(conn,id_bike)
+    df_dmg = df_dmg_bike['id_bike'].tolist()
+
+
+
+
+    df_br = get_bike_rentla(conn,id_bike)
+
+    df_rent_bike = get_rent_bike(conn)
+    df_info = get_info(conn, id_bike)
+
+    df_client = get_client(conn)
+
+    df_bike = get_bicycle(conn,models,brands,types,years,table)
+    for index, row in df_bike.iterrows():
+        if (4 >= int(current_date.year)-int(row['Год_Выпуска']) > 3):
+            df_bike['Цена_День'][index]= row['Цена_День'] * 0.9
+        elif (5>=int(current_date.year)-int(row['Год_Выпуска']) > 4):
+            df_bike['Цена_День'][index] = row['Цена_День'] * 0.8
+        elif (int(current_date.year)-int(row['Год_Выпуска']) > 5):
+            df_bike['Цена_День'][index] = row['Цена_День'] * 0.7
+    for index, row in df_bike1.iterrows():
+        if (4 >= int(current_date.year)-int(row['Год_Выпуска']) > 3):
+            df_bike1['Цена_День'][index]= row['Цена_День'] * 0.9
+        elif (5>=int(current_date.year)-int(row['Год_Выпуска']) > 4):
+            df_bike1['Цена_День'][index] = row['Цена_День'] * 0.8
+        elif (int(current_date.year)-int(row['Год_Выпуска']) > 5):
+            df_bike1['Цена_День'][index] = row['Цена_День'] * 0.7
     if request.values.get('confirm'):
         count_plus = int(request.values.get('count_dmg'))
         for i in range(count_plus + 1):
@@ -136,32 +177,6 @@ def index():
             list_num.append(request.values.get('num' + str(i)))
             # print(list_dmg)
             # print(str(i))
-
-    df_damage = get_damage(conn)
-    df_bike1 = get_bike(conn, id_bike)
-    df_dmg_bike = get_dmg_for_bike(conn)
-    df_get_one_dmg = get_one_dmg(conn,id_bike)
-    df_get_all_dmg_price = get_all_dmg_price(conn,id_bike)
-    df_dmg = df_dmg_bike['id_bike'].tolist()
-
-
-
-
-    df_br = get_bike_rentla(conn,id_bike)
-
-    df_rent_bike = get_rent_bike(conn)
-    df_info = get_info(conn, id_bike)
-
-    df_client = get_client(conn)
-
-    df_bike = get_bicycle(conn,models,brands,types,years,table)
-    for index, row in df_bike.iterrows():
-        if (4 >= int(current_date.year)-int(row['Год_Выпуска']) > 3):
-            df_bike['Цена_День'][index]= row['Цена_День'] * 0.9
-        elif (5>=int(current_date.year)-int(row['Год_Выпуска']) > 4):
-            df_bike['Цена_День'][index] = row['Цена_День'] * 0.8
-        elif (int(current_date.year)-int(row['Год_Выпуска']) > 5):
-            df_bike['Цена_День'][index] = row['Цена_День'] * 0.7
     df_type = get_type(conn)
     df_brand = get_brand(conn)
     df_model = get_model(conn)

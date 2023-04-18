@@ -61,7 +61,7 @@ def get_pledge(conn,id_b):
 
 def get_pay_day(conn,id_b):
     return pd.read_sql('''
-    SELECT price_type FROM bike_rental
+    SELECT price_type, release_year AS Год_Выпуска FROM bike_rental
     JOIN client USING (id_client)
     JOIN bike USING (id_bike)
     JOIN ModelBicycle USING (id_model)
